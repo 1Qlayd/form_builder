@@ -16,7 +16,7 @@ public class UserRepository {
     }
 
     public List<User>findAllUsers(){
-        return jdbcClient.sql("SElECT * FROM USERS").query(User.class).list();
+        return jdbcClient.sql("SELECT * FROM users").query(User.class).list();
     }
 
     public Optional<User> findById(Integer id) {
@@ -27,15 +27,15 @@ public class UserRepository {
     }
 
     public void create(User user) {
-        var updated =  jdbcClient.sql("INSERT INTO USERS (id, username, hash_password, email, idRole) VALUES (?,?,?,?,?)")
-                .params(List.of(user.getId(), user.getUsername(), user.getHash_password(), user.getEmail(),user.getIdRole()))
+        var updated =  jdbcClient.sql("INSERT INTO USERS (id, username, email, idRole) VALUES (?,?,?,?)")
+                .params(List.of(user.getId(), user.getUsername(), user.getEmail(),user.getIdRole()))
                 .update();
         Assert.state(updated == 1,"Ошибка в create" + user.getUsername());
     }
 
     public void update(User user, Integer id) {
-        var updated = jdbcClient.sql("UPDATE USERS SET username = ?, hash_password = ?, email = ?, idRole = ? WHERE id = ?")
-                .params(List.of(user.getUsername(), user.getHash_password(), user.getEmail(),user.getIdRole(), id))
+        var updated = jdbcClient.sql("UPDATE USERS SET username = ?, email = ?, idRole = ? WHERE id = ?")
+                .params(List.of(user.getUsername(), user.getEmail(),user.getIdRole(), id))
                 .update();
         Assert.state(updated == 1,"Ошибка в update" + user.getUsername());
     }

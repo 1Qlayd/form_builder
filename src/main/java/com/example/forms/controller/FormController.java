@@ -3,6 +3,7 @@ package com.example.forms.controller;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,6 +28,7 @@ public class FormController {
     }
 
     @GetMapping("")
+    @PreAuthorize("hasRole('client_user')")
     List<Form> findAll(){
         return formService.findAllForms();
     }

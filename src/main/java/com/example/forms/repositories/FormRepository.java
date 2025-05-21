@@ -50,7 +50,7 @@ public class FormRepository {
     }
 
     public int count(){
-        return jdbcClient.sql("SElECT * FROM FORM").query().listOfRows().size();
+        return jdbcClient.sql("SELECT * FROM FORM").query().listOfRows().size();
     }
     
     public void saveAll(List<Form> form){
