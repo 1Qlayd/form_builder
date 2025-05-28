@@ -5,7 +5,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.example.forms.service.MinioService;
 
+import lombok.extern.slf4j.Slf4j;
+
 @RestController
+@Slf4j
 @RequestMapping("/api/files")
 public class FileController {
 
@@ -15,24 +18,32 @@ public class FileController {
         this.minioService = minioService;
     }
 
-    @GetMapping("/upload")
-    public ResponseEntity<String> generateUploadUrl(
-            @RequestParam String objectName,
-            @RequestParam(defaultValue = "3600") int expiryInSeconds) {
-        try {
-            // Проверяем, не существует ли уже файл с таким именем
-            if (minioService.fileExists(objectName)) {
-                return ResponseEntity.status(HttpStatus.CONFLICT)
-                        .body("File with this name already exists");
-            }
-            
-            String uploadUrl = minioService.getPresignedUploadUrl(objectName, expiryInSeconds);
-            return ResponseEntity.ok(uploadUrl);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Failed to generate upload URL: " + e.getMessage());
+@GetMapping("/upload")
+public ResponseEntity<String> generateUploadUrl(
+        @RequestParam String objectName,
+        @RequestParam(defaultValue = "3600") int expiryInSeconds,
+        @RequestParam(required = false) String createdBy,
+        @RequestParam(required = false) String description) {
+    try {
+        if (objectName == null || objectName.trim().isEmpty()) {
+            return ResponseEntity.badRequest().body("File name cannot be empty");
         }
+
+        if (minioService.fileExists(objectName)) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body("File already exists");
+        }
+        String uploadUrl = minioService.getPresignedUploadUrl(objectName, expiryInSeconds);
+
+        minioService.saveFileMetadata(objectName, createdBy, description, uploadUrl);
+
+        return ResponseEntity.ok(uploadUrl);
+    } catch (Exception e) {
+        log.error("Upload failed", e);
+        return ResponseEntity.internalServerError()
+                .body("Error: " + e.getMessage());
     }
+}
 
     @GetMapping("/download")
     public ResponseEntity<String> generateDownloadUrl(

@@ -1,6 +1,5 @@
 package com.example.forms.repositories;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.jdbc.core.simple.JdbcClient;
@@ -29,15 +28,16 @@ public class FileRepository {
     }
 
     public void create(File file) {
-        var updated = jdbcClient.sql("INSERT INTO files (file_name, file_path, content_type, size, upload_date, created_by, description) " +
-     "VALUES (?,?,?,?,?,?,?)")
-            .params(List.of(
-                file.getFileName(),
-                file.getFilePath(),
-                file.getContentType(),
-                file.getSize(),
-                file.getUploadDate()))
-            .update();
+        var updated = jdbcClient.sql("INSERT INTO files (file_name, file_path, content_type, upload_date, created_by, description) " +
+                "VALUES (?,?,?,?,?,?)")
+                .params(List.of(
+                    file.getFileName(),
+                    file.getFilePath(),
+                    file.getContentType(),
+                    file.getUploadDate(),
+                    file.getCreatedBy(),
+                    file.getDescription()))
+                .update();
         
         Assert.state(updated == 1, "Failed to create file: " + file.getFileName());
     }

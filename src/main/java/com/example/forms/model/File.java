@@ -1,6 +1,7 @@
 package com.example.forms.model;
 
 import lombok.Data;
+import java.time.LocalDateTime;
 
 @Data
 public class File {
@@ -9,15 +10,18 @@ public class File {
     private String fileName;
     private String filePath;
     private String contentType;
-    private Long size;
-    private String uploadDate;
+    private LocalDateTime uploadDate;
+    private String createdBy;
+    private String description;
 
-    public File(String fileName, String filePath, String contentType, Long size, String uploadDate) {
+    public File(String fileName, String filePath, String contentType, 
+        LocalDateTime uploadDate, String createdBy, String description) {
         this.fileName = fileName;
         this.filePath = filePath;
         this.contentType = contentType;
-        this.size = size;
         this.uploadDate = uploadDate;
+        this.createdBy = createdBy;
+        this.description = description;
     }
 
     public File() {}
